@@ -1,0 +1,17 @@
+{
+	"nodes":[
+		{"id":"jhon"},
+		{"id":"roni"},
+		{"id":"monir"},
+		{"id":"runa"},
+		{"id":"mumin"}
+		
+	],
+	"links":[
+		{"source": "jhon", "target": "runa"},
+		{"source": "jhon", "target": "roni"},
+		{"source": "jhon", "target": "mumin"},
+		{"source": "jhon", "target": "monir"},
+		{"source": "roni", "target": "runa"}
+	]
+}

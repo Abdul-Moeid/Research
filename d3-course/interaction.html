@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>update</title>
+</head>
+<body>
+	<div>
+		Over:<input type="text" id="over"><br>
+		Runs:<input type="number" id="run"><br>
+		<button onclick="update()">Update</button>
+	</div>
+
+	<svg id="cont" height="500px" width="100%" style="transform: rotate(-90deg)">
+		<g id="body" style="transform: translate(50px,50px)"></g>
+		<g id="xaxis"></g>
+		<g id="yaxis"></g>
+	</svg>
+</body>
+<script src="d3.js"></script>
+<script>
+	let container= d3.select("#body");
+	let over;
+	let run;
+
+	d3.csv("data/numerical-scale1.csv").then(function(data){
+		data.map(d=>{
+			d.Run=+d.Run;
+		})
+
+
+		showdata(data);
+	})
+
+	function update()
+	{
+
+		d3.csv("data/numerical-scale1.csv").then(function(data){
+		data.map(d=>{
+			d.Run=+d.Run;
+		})
+
+		run=document.getElementById("run").value
+		over=document.getElementById("over").value
+		for(d of data)
+		{
+			if(d.Over==over)
+			{
+				console.log(d.Run)
+				d.Run=+run;
+				console.log(d.Run)
+				showdata(data);
+			}
+		}
+		
+
+	})
+		
+		
+	}
+	function showdata(client)
+	{
+		let max = d3.max(client,d=>d.Run)
+		console.log("m:"+max)
+		let scale=d3.scaleLinear()
+		.domain([0,max])
+		.range([0,400])
+		let posiscale=d3.scaleBand()
+		.domain(client.map(d=>d.Over))
+		.range([0, 300])
+		.padding(0.2)
+		let join = container.selectAll('rect')
+		    .data(client)
+
+		    join.enter()
+		    .append("rect")
+		    .attr("fill", "blue")
+		    .attr("width", d=> scale(d.Run))
+		    .attr("height",posiscale.bandwidth())
+		    .attr("y",d=>posiscale(d.Over))
+		    
+			
+		let xaxis = d3.axisTop(scale)
+		.ticks(6)
+		.tickFormat(d=> d+ " Runs")
+		d3.select("#xaxis")
+		.attr("transform", "translate(50,50)")
+		.call(xaxis)
+		let yaxis = d3.axisLeft(posiscale)
+		.tickFormat(d=> d+ " Over")
+		d3.select("#yaxis")
+		.attr("transform", "translate(50,50)")
+		.call(yaxis)
+		    
+	}
+	function print(data)
+	{
+		container.append("div").text(data);	
+	}
+</script>
+</html>

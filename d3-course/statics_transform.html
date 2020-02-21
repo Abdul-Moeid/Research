@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="simple.css">
+	<title>new start</title>
+</head>
+<body>
+	<div>
+		<h1>Checking d3</h1>
+	</div>
+	<div id="cont">
+		
+	</div>
+</body>
+<script src="d3.js"></script>
+<script>
+	let container= d3.select("#cont");
+	d3.csv("statics-tranform.csv").then(function(data){
+		data.map(d=>{
+			d.BMI=getbmi(d);//add bmi using maping
+			return d;
+		})
+
+		showdata(data);
+		let totalbmi=data.reduce(
+			(prev,current)=>{
+				return prev+current.BMI;
+			}, 0)
+		print("---------");
+		print("Total BMI: "+totalbmi);//predfined don't need loop;
+		let total=d3.sum(data,d=>d.Weight)
+		print("total weight: "+total);
+		let max=d3.max(data,d=>d.Weight)
+		console.log(typeof(max))
+		print("max weight: " + max);//same way min/mean                    
+		console.log(data)
+		console.log(max)
+		let extent= d3.extent(data,d=>d.BMI)
+		print("min max: "+extent);
+	})
+	function showdata(client)
+	{
+		for(let da of client)
+		{
+			print(da.Name+" "+da.BMI);
+		}	
+	}
+
+	function getbmi(client)
+	{
+		return client.Weight/(client.Height*client.Height);
+	}
+	function print(data)
+	{
+		container.append("div").text(data);	
+	}
+</script>
+</html>

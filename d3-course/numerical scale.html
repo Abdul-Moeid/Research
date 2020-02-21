@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="simple.css">
+	<title>new start</title>
+</head>
+<body>
+
+	<div id="cont">
+		
+	</div>
+</body>
+<script src="d3.js"></script>
+<script>
+	let container= d3.select("#cont");
+
+	d3.csv("data/numerical-scale.csv").then(function(data){
+		data.map(d=>{
+			d.Run=+d.Run;
+		})
+		showdata(data);
+	})
+	function showdata(client)
+	{
+		let max = d3.max(client,d=>d.Run)
+		console.log(max)
+		let scale=d3.scaleLinear()
+		.domain([0,max])
+		.range([100,600])
+		let posiscale=d3.scaleBand()
+		.domain(client.map(d=>d.Over))
+		.range([0, 200])
+		let join = container.selectAll('div')
+		    .data(client)
+		    join.enter()
+		    .append("div")
+		    .text(d=>d.Over +" "+ d.Run)
+		    .style('background-color', 'blue')
+		    .style('margin', "5px")
+		    .style('color','white')
+		    .style("width",d=> scale(d.Run)+'px')
+		    .style("y",d=>posiscale(d.Over)+'px')
+
+		  
+	}
+	function print(data)
+	{
+		container.append("div").text(data);	
+	}
+</script>
+</html>

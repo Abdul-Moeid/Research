@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="simple.css">
+	<title>new start</title>
+</head>
+<body>
+
+	<svg id="cont" height="400px" width="100%">
+		<g id="body" style="transform: translate(50px,0px)"></g>
+		<g id="xaxis"></g>
+		<g id="yaxis"></g>
+	</svg>
+</body>
+<script src="d3.js"></script>
+<script>
+	let container= d3.select("#body");
+
+	d3.csv("data/numerical-scale1.csv").then(function(data){
+		data.map(d=>{
+			d.Run=+d.Run;
+		})
+		showdata(data);
+	})
+	function showdata(client)
+	{
+		let max = d3.max(client,d=>d.Run)
+		let scale=d3.scaleLinear()
+		.domain([0,max])
+		.range([0,400])
+		let posiscale=d3.scaleBand()
+		.domain(client.map(d=>d.Over))
+		.range([0, 300])
+		.padding(0.2)
+		let join = container.selectAll('rect')
+		    .data(client)
+
+		    join.enter()
+		    .append("rect")
+		    .attr("fill", "blue")
+		    .attr("width", d=> scale(d.Run))
+		    .attr("height",posiscale.bandwidth())
+		    .attr("y",d=>posiscale(d.Over))
+			
+		let xaxis = d3.axisBottom(scale)
+		.ticks(6)
+		.tickFormat(d=> d+ " Runs")
+		d3.select("#xaxis")
+		.attr("transform", "translate(50,300)")
+		.call(xaxis)
+		let yaxis = d3.axisLeft(posiscale)
+		.tickFormat(d=> d+ " Over")
+		d3.select("#yaxis")
+		.attr("transform", "translate(50,0)")
+		.call(yaxis)
+		    
+	}
+	function print(data)
+	{
+		container.append("div").text(data);	
+	}
+</script>
+</html>

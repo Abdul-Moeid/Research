@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="simple.css">
+	<title>new start</title>
+</head>
+<body>
+	<div>
+		<h1>Checking d3</h1>
+	</div>
+	<div id="cont">
+		
+	</div>
+</body>
+<script src="d3.js"></script>
+<script>
+	let container= d3.select("#cont");
+	d3.csv("new.csv").then(function(data){
+		data.sort((a,b)=>{
+			return d3.ascending(a.NAME, b.NAME)
+		})
+		
+		//showdata(data)
+		data=data.filter(b=>{//filter does't change actual data that's why asign
+			return b.ID>1;
+		})
+		showdata(data)
+
+	})
+
+	function showdata(client)
+	{
+		for(let da of client)
+		{
+			container.append("div").text(da.NAME+" "+da.ID)
+		}	
+	}
+</script>
+</html>

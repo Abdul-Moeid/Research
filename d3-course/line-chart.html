@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>basic d3</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<svg id="container" height="500px" width="500px">
+		<g id="body" style="transform: translate(50px,10px)"></g>
+	</svg>
+</body>
+<script src="d3.js"></script>
+<script >
+	let body = d3.select("#body")
+	d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv").then(function(data){
+		data.map(d=>{
+			d.value =+ d.value;
+			d.date = d3.timeParse("%Y-%m-%d")(d.date)
+		})
+		showdata(data);
+	})
+	let height = 300;
+	let width = 300;
+	function showdata(data)
+	{	
+		data.map(d=> {
+			d.date= new Date(d.date)
+		})
+		let max = d3.max(data,d=>d.value)
+		let yscale = d3.scaleLinear()
+		.domain([0,max])
+		.range([height,0])
+		body.append("g")
+		.call(d3.axisLeft(yscale))
+
+		let xscale = d3.scaleTime()
+		.domain(d3.extent(data,d=>d.date))
+		.range([0,width])
+		body.append("g")
+		.attr("transform", "translate(0,"+height+")")
+		.call(d3.axisBottom(xscale))
+	
+		valueline = d3.line()
+		.x(d => xscale(d.date))
+		.y(d => yscale(d.value))
+		.defined(d => !!d.value)
+
+		body.append("path")
+		.datum(data)
+		.attr("d", valueline)
+		.attr("class", "line")
+	}
+</script>
+</html>

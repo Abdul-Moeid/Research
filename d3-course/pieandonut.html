@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>basic d3</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<svg id="container" height="500px" width="500px">
+		<g id="body" style="transform: translate(250px,200px)"></g>
+	</svg>
+	<div id="tooltip">Sometext</div>
+</body>
+<script src="d3.js"></script>
+<script >
+	let body = d3.select("#body")
+	d3.csv("data/countryrate.csv").then(function(data){
+		data.map(d=>{
+			d.rate =+ d.rate;
+		})
+		showdata(data);
+	})
+	let height = 300;
+	let width = 300;
+
+	function showtool(text, coord){
+		d3.select("#tooltip").text("literacy rate: "+text+"%")
+			.style('top', coord[1]-15+"px")
+			.style("left", coord[0]+15+"px")
+			.style("display", "block")
+	}
+
+	function showdata(data)
+	{	
+
+		let pie =d3.pie()
+			.value(d => d.rate)
+		let colorscale = d3.scaleOrdinal()
+			.domain(data.map(d => d.country))
+			.range(d3.schemeCategory10)
+		let arc = d3.arc()
+			.outerRadius(height*.5)
+			.innerRadius(0)
+		let g =	body.selectAll(".arc")
+			.data(pie(data))
+			.enter()
+			.append("g")
+			
+		g.append("path")
+			.attr("d",arc)
+			.attr("fill", d => {
+				return colorscale(d.data.country)//data object will put by pie. so only d. will not work
+			})
+			 .on("mouseenter", d=>{
+		    	showtool(d.data.rate,[d3.event.clientX, d3.event.clientY])
+		    })
+		    .on("mouseleave", d=>{
+		    	d3.select("#tooltip").style('display', 'none')
+		    })
+		    .on("mousemove", d=>{
+		    	showtool(d.data.rate,[d3.event.clientX, d3.event.clientY])
+		    })
+		 g
+		  .selectAll('mySlices')
+		  .data(pie(data))
+		  .enter()
+		  .append('text')
+		  .text(function(d){ return  d.data.country})
+		  .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")";  })
+		  .style("text-anchor", "middle")
+		  .style("font-size", 14)
+
+
+	}
+	function cout(data)
+	{
+		console.log(data)
+	}
+</script>
+</html>

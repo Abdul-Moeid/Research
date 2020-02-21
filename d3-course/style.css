@@ -1,0 +1,12 @@
+.line{
+		fill: none;
+		stroke: blue;
+	}
+#tooltip{
+	border: solid 2px black;
+	padding: 5px;
+	position: absolute;
+	display: none;
+	background-color: white;
+}
+

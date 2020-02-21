@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>basic d3</title>
+	<link rel="stylesheet" href="style/mapstyle.css">
+</head>
+<body width="100%">
+	<!--<svg id="container" height="700" width="90%">
+		<g id="body" style="transform: translate(-100px,80px)"></g>
+	</svg>-->
+	<div id="map"></div>
+	<div id="tooltip"></div>
+	
+</body>
+<script src="d3.js"></script>
+<script >
+	let body = d3.select("#body")
+	const map = d3.select("#map");
+
+	d3.json("data/countries.geo.json").then(function(data){
+		data.features.map(d=>{
+			d.properties.mag=magni()
+			return d;
+
+		})
+		showdata(data);
+	})
+
+	const width = map.node().getBoundingClientRect().width;
+    const height = width/1.48;
+
+	function showtool(country, coord){
+		d3.select("#tooltip")
+			.html("Country Name: "+country.name+"<br> Magnitude of Earthquake: "+country.mag)
+			.style('top', coord[1]-15+"px")
+			.style("left", coord[0]+15+"px")
+			.style("display", "block")
+			.style("color", "blue")
+			
+	}
+
+	const zoom = d3.zoom()
+    .scaleExtent([-10, 40])
+    .translateExtent([[0,0], [width, height]])
+    .extent([[0, 0], [width, height]])
+    .on("zoom", zoomed);
+    
+    const svg = map.append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .call(zoom);
+    
+    const g = svg.append("g")
+
+	function showdata(mapdata)
+	{
+		let projection = d3.geoMercator()
+			.scale(85)
+			//.translate(300,300)
+		let clscale = d3.scaleLinear()
+		.domain([0, 5, 10])
+		.range(["white", "yellow",  "red"])
+
+		let path = d3.geoPath()
+			.projection(projection)
+		   g.selectAll("path")
+			.data(mapdata.features)
+			.enter()
+			.append("path")
+			.attr("d", d => path(d))
+			.attr("stroke","black")
+			.attr("fill",
+				d=> clscale(d.properties.mag)
+			 )
+		    .on("mouseover", function(){
+		    	this.style.stroke= "silver"
+		    })
+		    .on("mouseout", function(){
+		    	this.style.stroke= "black"
+		    })
+		    .on("mouseenter", d=>{
+		    	showtool(d.properties,[d3.event.clientX, d3.event.clientY])
+		    })
+		    .on("mouseleave", d=>{
+		    	d3.select("#tooltip").style('display', 'none')
+		    })
+		    .on("mousemove", d=>{
+		    	showtool(d.properties,[d3.event.clientX, d3.event.clientY])
+		    })
+			
+	}
+
+function zoomed(){
+	g.attr("transform", d3.event.transform);
+} 
+	function print(data)
+	{
+		console.log(data)
+	}
+
+	function magni()
+	{
+		var min=0; 
+	    var max=9;  
+	    var random = Math.random() * (+max - +min) + +min;
+	    return random.toFixed(3);  
+	}
+</script>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="simple.css">
+	<title>new start</title>
+</head>
+<body>
+	<div>
+		<h1>Checking d3</h1>
+	</div>
+	<div id="cont">
+		
+	</div>
+</body>
+<script src="d3.js"></script>
+<script>
+	let container= d3.select("#cont");
+	d3.csv("data/statics-tranform.csv").then(function(data){
+		
+
+		showdata(data);
+
+	})
+	function showdata(client)
+	{
+		for(let da of client)
+		{
+			print(da.Name+" "+da.BMI);
+		}	
+	}
+	function print(data)
+	{
+		container.append("div").text(data);	
+	}
+</script>
+</html>

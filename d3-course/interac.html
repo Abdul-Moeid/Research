@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>new start</title>
+</head>
+<body>
+	<div>
+		Over:<input type="text" id="over"><br>
+		Runs:<input type="number" id="run"><br>
+		<button onclick="update()">Update</button><br>
+	</div>
+
+	<svg id="cont" height="400px" width="100%">
+		<g id="body" style="transform: translate(50px,0px)"></g>
+		<g id="xaxis"></g>
+		<g id="yaxis"></g>
+	</svg>
+	<br>
+	<svg id="cont1" height="400px" width="100%">
+		<g id="body1" style="transform: translate(50px,0px)"></g>
+		<g id="xaxis1"></g>
+		<g id="yaxis1"></g>
+	</svg>
+</body>
+<script src="d3.js"></script>
+<script>
+	let container= d3.select("#body");
+	let container1= d3.select("#body1");
+	let over;
+	let run;
+
+	d3.csv("data/numerical-scale1.csv").then(function(data){
+		data.map(d=>{
+			d.Run=+d.Run;
+		})
+
+
+		showdata(data);
+	})
+
+	function update()
+	{
+
+		d3.csv("data/numerical-scale1.csv").then(function(data){
+		data.map(d=>{
+			d.Run=+d.Run;
+		})
+
+		run=document.getElementById("run").value
+		over=document.getElementById("over").value
+		for(d of data)
+		{
+			if(d.Over==over)
+			{
+				d.Run=+run
+				d.Over=over
+				showdata(data)
+			}
+		}
+		
+
+	})
+		
+		
+	}
+	function showdata(client)
+	{
+		let max = d3.max(client,d=>d.Run)
+		let scale=d3.scaleLinear()
+		.domain([0,max])
+		.range([0,400])
+		let posiscale=d3.scaleBand()
+		.domain(client.map(d=>d.Over))
+		.range([0, 300])
+		.padding(0.2)
+		//console.log(scale(20))
+		let join = container.selectAll('rect')
+		    .data(client)
+
+		  let newe=join.enter()
+		    .append("rect")
+		    .attr("fill", "blue")
+		    join.merge(newe)
+		    .attr("width", d=> scale(d.Run))
+		    .attr("height",posiscale.bandwidth())
+		    .attr("y",d=>posiscale(d.Over))
+			
+		let xaxis = d3.axisBottom(scale)
+		.ticks(6)
+		.tickFormat(d=> d+ " Runs")
+		d3.select("#xaxis")
+		.attr("transform", "translate(50,300)")
+		.call(xaxis)
+		let yaxis = d3.axisLeft(posiscale)
+		.tickFormat(d=> d+ " Over")
+		d3.select("#yaxis")
+		.attr("transform", "translate(50,0)")
+		.call(yaxis)
+		    
+	}
+
+
+	function print(data)
+	{
+		container.append("div").text(data);	
+	}
+</script>
+</html>

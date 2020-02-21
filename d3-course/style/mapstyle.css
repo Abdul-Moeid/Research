@@ -1,0 +1,20 @@
+#map{
+	border: solid 2px blue;
+	
+}
+
+#tooltip{
+	border: solid 2px black;
+	padding: 5px;
+	position: absolute;
+	display: none;
+	background-color: white;
+}
+body { 
+	margin:10px;
+	position:fixed;
+	top:0;
+	right:0;
+	bottom:0;
+	left:0; 
+}

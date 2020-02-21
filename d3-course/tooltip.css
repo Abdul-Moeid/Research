@@ -1,0 +1,17 @@
+#cont{
+	padding-left: 80px;
+	padding-top: 50px;
+}
+#content{
+	border: solid 2px green;
+	width: 700px;
+	margin-left: 50px;
+	margin-top: 50px;
+}
+#tooltip{
+	border: solid 2px black;
+	padding: 5px;
+	position: absolute;
+	display: none;
+	background-color: white;
+}

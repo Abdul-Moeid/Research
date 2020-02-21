@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="tooltip.css">
+	<title>new start</title>
+</head>
+<body>
+
+	<div id="content">
+		<svg id="cont" height="400px" width="100%">
+		<g id="body" style="transform: translate(50px,0px)"></g>
+		<g id="xaxis"></g>
+		<g id="yaxis"></g>
+	</svg>
+	</div>
+	<div id="tooltip">Sometext</div>
+</body>
+<script src="d3.js"></script>
+<script>
+	let container= d3.select("#body");
+
+	d3.csv("data/numerical-scale1.csv").then(function(data){
+		data.map(d=>{
+			d.Run=+d.Run;
+		})
+		showdata(data);
+	})
+	function showtool(text, coord){
+		d3.select("#tooltip").text("Runs: "+text)
+			.style('top', coord[1]-15+"px")
+			.style("left", coord[0]+15+"px")
+			.style("display", "block")
+	}
+	function action(d,data)
+	{
+		const cond=prompt("Enter 'F' for filtering or 'U' for updating")
+		if(cond==='F')
+		{
+			const amount=prompt("Enter (-value) for less than or (+value) for grater than")
+			if(amount<0)
+			{
+				data=data.filter(d=>{
+					return d.Run<-amount
+				})
+				print(data)
+				showdata(data)
+			}
+			else{
+				data=data.filter(d=>{
+					return d.Run>amount
+				})
+				showdata(data)
+			}
+		}
+		else{
+		const run=prompt("Updated Run")
+		data[d.Over-1].Run= +run
+		showdata(data)
+		}
+			
+	}
+	function showdata(client)
+	{
+		let max = d3.max(client,d=>d.Run)
+		let scale=d3.scaleLinear()
+		.domain([0,max])
+		.range([0,400])
+		let posiscale=d3.scaleBand()
+		.domain(client.map(d=>d.Over))
+		.range([0, 300])
+		.padding(0.2)
+		let join = container.selectAll('rect')
+		    .data(client)
+
+		    let newe=join.enter()
+		    .append("rect")
+		    .attr("fill", "blue")
+		    join.merge(newe)
+		    .attr("width", d=> scale(d.Run))
+		    .attr("height",posiscale.bandwidth())
+		    .attr("y",d=>posiscale(d.Over))
+		    .on("mouseenter", d=>{
+		    	showtool(d.Run,[d3.event.clientX, d3.event.clientY])
+		    })
+		    .on("mouseleave", d=>{
+		    	d3.select("#tooltip").style('display', 'none')
+		    })
+		    .on("mousemove", d=>{
+		    	showtool(d.Run,[d3.event.clientX, d3.event.clientY])
+		    })
+		    .on("click", d=>{
+		    	action(d,client)
+		    })
+		    .on("mouseover", function(){
+		    	this.style.fill= "yellow"
+		    })
+		    .on("mouseout", function(){
+		    	this.style.fill= "blue"
+		    })
+
+			
+		let xaxis = d3.axisBottom(scale)
+		.ticks(6)
+		.tickFormat(d=> d+ " Runs")
+		d3.select("#xaxis")
+		.attr("transform", "translate(50,300)")
+		.call(xaxis)
+		let yaxis = d3.axisLeft(posiscale)
+		.tickFormat(d=> d+ " Over")
+		d3.select("#yaxis")
+		.attr("transform", "translate(50,0)")
+		.call(yaxis)
+		    
+	}
+	function print(data)
+	{
+		console.log(data)
+	}
+</script>
+</html>

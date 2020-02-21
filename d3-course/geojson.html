@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>basic d3</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<svg id="container" height="800px" width="100%">
+		<g id="body" style="transform: translate(0px,80px)"></g>
+	</svg>
+</body>
+<script src="d3.js"></script>
+<script >
+	let body = d3.select("#body")
+	d3.json("data/countries.geo.json").then(function(data){
+		showdata(data);
+	})
+	let height = 300;
+	let width = 300;
+
+	function showdata(mapdata)
+	{
+		let projection = d3.geoMercator()
+			.scale(100)
+			//.translate(300,300)
+
+		let path = d3.geoPath()
+			.projection(projection)
+
+		body.selectAll("path")
+			.data(mapdata.features)
+			.enter()
+			.append("path")
+			.attr("d", d => path(d))
+			.attr("stroke","black")
+			.attr("fill","none")
+			
+	}
+	function cout(data)
+	{
+		console.log(data)
+	}
+</script>
